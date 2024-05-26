@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
-from models import Contact
-from schemas import ContactCreate, ContactUpdate
+from app.models import Contact
+from app.schemas import ContactCreate, ContactUpdate
 from datetime import date, timedelta
 
 

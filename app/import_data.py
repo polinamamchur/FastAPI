@@ -1,5 +1,5 @@
-from database import SessionLocal, engine
-import models
+from app.database import SessionLocal, engine
+from app import models
 
 def init_db():
     db = SessionLocal()
