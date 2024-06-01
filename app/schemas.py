@@ -2,6 +2,7 @@ from pydantic import BaseModel, EmailStr
 from typing import Optional
 from datetime import date
 
+# Контакти
 class ContactBase(BaseModel):
     first_name: str
     last_name: str
@@ -20,4 +21,25 @@ class Contact(ContactBase):
     id: int
 
     class Config:
-        from_attributes = True
+        orm_mode = True  # Використовується для сумісності з ORM моделями
+
+# Користувачі
+class UserCreate(BaseModel):
+    email: EmailStr
+    password: str
+
+class UserResponse(BaseModel):
+    id: int
+    email: EmailStr
+
+    class Config:
+        orm_mode = True
+
+# Токени
+class Token(BaseModel):
+    access_token: str
+    refresh_token: str
+    token_type: str
+
+class TokenData(BaseModel):
+    email: Optional[str] = None
