@@ -4,7 +4,9 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 from passlib.context import CryptContext
-
+from itsdangerous import URLSafeTimedSerializer
+import smtplib
+from email.mime.text import MIMEText
 from . import schemas, crud, database
 from dotenv import load_dotenv
 import os
@@ -15,10 +17,14 @@ load_dotenv()
 SECRET_KEY = os.getenv('SECRET_KEY', 'fallback_secret_key')
 ALGORITHM = os.getenv('ALGORITHM', 'HS256')
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv('ACCESS_TOKEN_EXPIRE_MINUTES', 30))
+EMAIL_SECRET_KEY = os.getenv('EMAIL_SECRET_KEY', 'email_fallback_secret_key')
+EMAIL_SENDER = os.getenv('EMAIL_SENDER', 'your_email@gmail.com')
+EMAIL_PASSWORD = os.getenv('EMAIL_PASSWORD', 'your_email_password')
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+serializer = URLSafeTimedSerializer(EMAIL_SECRET_KEY)
 
 def create_access_token(data: dict, expires_delta: timedelta = None):
     to_encode = data.copy()
@@ -29,6 +35,29 @@ def create_access_token(data: dict, expires_delta: timedelta = None):
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
+
+def generate_verification_token(email: str) -> str:
+    return serializer.dumps(email, salt="email-confirm-salt")
+
+def verify_verification_token(token: str) -> str:
+    try:
+        email = serializer.loads(token, salt="email-confirm-salt", max_age=3600)
+    except:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid or expired token")
+    return email
+
+def send_email(to_email: str, subject: str, body: str):
+    from_email = EMAIL_SENDER
+    password = EMAIL_PASSWORD
+
+    msg = MIMEText(body)
+    msg['Subject'] = subject
+    msg['From'] = from_email
+    msg['To'] = to_email
+
+    with smtplib.SMTP_SSL('smtp.gmail.com', 465) as server:
+        server.login(from_email, password)
+        server.sendmail(from_email, [to_email], msg.as_string())
 
 def get_user(db: Session, email: str):
     return crud.get_user_by_email(db, email)

@@ -6,3 +6,12 @@ pydantic
 python-dotenv
 passlib[bcrypt]
 python-jose[cryptography]
+uvicorn[standard]
+sqlalchemy
+psycopg2-binary
+fastapi-limiter
+aioredis
+redis
+itsdangerous
+cloudinary
+python-multipart

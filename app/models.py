@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Date
+from sqlalchemy import Column, Integer, String, Date, Boolean
 from app.database import Base
 
 class Contact(Base):
@@ -18,3 +18,5 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True)
     email = Column(String, unique=True, index=True)
     hashed_password = Column(String)
+    is_verified = Column(Boolean, default=False)
+    avatar_url = Column(String, nullable=True)

@@ -1,17 +1,18 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
+from fastapi_limiter.depends import RateLimiter
 from .. import schemas, crud, auth
 from ..database import get_db
 
-router = APIRouter()
+router = APIRouter(tags=["Contacts"])
 
 @router.get("/contacts", response_model=List[schemas.Contact])
 def read_contacts(skip: int = 0, limit: int = 10, db: Session = Depends(get_db), current_user: schemas.UserResponse = Depends(auth.get_current_user)):
     contacts = crud.get_contacts(db, user_id=current_user.id, skip=skip, limit=limit)
     return contacts
 
-@router.post("/contacts", response_model=schemas.Contact)
+@router.post("/contacts", response_model=schemas.Contact, dependencies=[Depends(RateLimiter(times=5, seconds=60))])
 def create_contact(contact: schemas.ContactCreate, db: Session = Depends(get_db), current_user: schemas.UserResponse = Depends(auth.get_current_user)):
     return crud.create_contact(db=db, contact=contact, user_id=current_user.id)
 
