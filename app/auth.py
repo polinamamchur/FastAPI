@@ -21,12 +21,12 @@ import os
 # Load environment variables from .env file
 load_dotenv()
 
-SECRET_KEY = os.getenv('SECRET_KEY', 'fallback_secret_key')
-ALGORITHM = os.getenv('ALGORITHM', 'HS256')
-ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv('ACCESS_TOKEN_EXPIRE_MINUTES', 30))
-EMAIL_SECRET_KEY = os.getenv('EMAIL_SECRET_KEY', 'email_fallback_secret_key')
-EMAIL_SENDER = os.getenv('EMAIL_SENDER', 'your_email@gmail.com')
-EMAIL_PASSWORD = os.getenv('EMAIL_PASSWORD', 'your_email_password')
+SECRET_KEY = os.getenv('SECRET_KEY')
+ALGORITHM = os.getenv('ALGORITHM')
+ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv('ACCESS_TOKEN_EXPIRE_MINUTES'))
+EMAIL_SECRET_KEY = os.getenv('EMAIL_SECRET_KEY')
+EMAIL_SENDER = os.getenv('EMAIL_SENDER')
+EMAIL_PASSWORD = os.getenv('EMAIL_PASSWORD')
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
