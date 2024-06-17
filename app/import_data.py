@@ -1,7 +1,16 @@
 from app.database import SessionLocal, engine
 from app import models
 
+
 def init_db():
+    """
+    Initialize the database with initial data.
+
+    This function populates the database with initial contacts.
+
+    Usage:
+        Call this function to initialize the database with initial data.
+    """
     db = SessionLocal()
     contacts = [
         {
@@ -21,14 +30,18 @@ def init_db():
             "additional_info": "Met at a conference"
         },
     ]
-    
+
     for contact in contacts:
         db_contact = models.Contact(**contact)
         db.add(db_contact)
-    
+
     db.commit()
     db.close()
 
+
 if __name__ == "__main__":
+    # Create all database tables defined in models.Base
     models.Base.metadata.create_all(bind=engine)
+
+    # Initialize the database with initial data
     init_db()

@@ -33,6 +33,11 @@ REDIS_PORT = os.getenv("REDIS_PORT")
 # Startup event: Initialize FastAPILimiter with Redis client
 @app.on_event("startup")
 async def startup():
+    """
+    Perform operations on application startup.
+
+    This function initializes FastAPILimiter with a Redis client based on environment variables.
+    """
     redis_url = f"redis://{REDIS_HOST}:{REDIS_PORT}/0"
     redis_client = redis.StrictRedis.from_url(redis_url)
     await FastAPILimiter.init(redis_client)
@@ -40,6 +45,11 @@ async def startup():
 # Shutdown event: Close the Redis connection
 @app.on_event("shutdown")
 async def shutdown():
+    """
+    Perform operations on application shutdown.
+
+    This function closes the Redis connection used by FastAPILimiter.
+    """
     redis_client = await FastAPILimiter.redis()
     redis_client.connection_pool.disconnect()
 
